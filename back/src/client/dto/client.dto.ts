@@ -30,3 +30,13 @@ export class ClientDto {
   @IsString()
   note: string;
 }
+
+export class CreateClientResponseDto {
+  id: number;
+  name: string;
+  cpf: string;
+  email: string;
+  color: string;
+  note?: string;
+  createdAt: Date;
+}
