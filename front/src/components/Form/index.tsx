@@ -1,5 +1,6 @@
 import { FormContainer, Header, FormFields } from './styles';
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 
 interface formProps {
   name: string;
@@ -9,6 +10,7 @@ interface formProps {
   note: string;
 }
 export function Form() {
+  const navigate = useNavigate();
   const colorsList = [
     'vermelho',
     'laranja',
@@ -28,6 +30,8 @@ export function Form() {
   const onSubmit = (data: formProps) => {
     console.log(data);
     //Chamada API
+
+    navigate('/success', { state: { canAccessSuccessPage: true } });
   };
   return (
     <>
