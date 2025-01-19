@@ -27,13 +27,13 @@ export class ClientService {
     try {
       if (await this.findClientbyEmail(client.email)) {
         throw new HttpException(
-          'Client with this email already exists',
+          'Já existe um cliente com esse email cadastrado',
           HttpStatus.CONFLICT,
         );
       }
       if (await this.findClientbyCpf(client.cpf)) {
         throw new HttpException(
-          'Client with this cpf already exists',
+          'Já existe um cliente com esse CPF cadastrado',
           HttpStatus.CONFLICT,
         );
       }
@@ -53,7 +53,7 @@ export class ClientService {
       }
       console.error(error);
       throw new HttpException(
-        'Error creating client',
+        'Erro ao criar cliente',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
