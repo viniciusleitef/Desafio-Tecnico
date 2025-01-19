@@ -4,6 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import { formProps } from '../../types';
 import { useClient } from '../../hooks/useClient';
 import { useState } from 'react';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useHookFormMask } from 'use-mask-input';
 
 export function Form() {
   const colorsList = [
@@ -15,15 +18,57 @@ export function Form() {
     'anil',
     'violeta',
   ];
+
+  const createClientFormSchema = z.object({
+    name: z
+      .string()
+      .nonempty('O nome é obrigatório')
+      .transform((name) => {
+        return name
+          .trim()
+          .split(' ')
+          .map((word) => {
+            return word[0].toLocaleUpperCase().concat(word.substring(1));
+          })
+          .join(' ');
+      }),
+    cpf: z
+      .string()
+      .nonempty('O cpf é obrigatório')
+      .regex(
+        /^\d{3}\.\d{3}\.\d{3}-\d{2}$/,
+        'O CPF deve conter exatamente 11 dígitos.'
+      )
+      .transform((cpf) =>
+        cpf
+          .replace(/\D/g, '')
+          .replace(/(\d{3})(\d)/, '$1.$2')
+          .replace(/(\d{3})(\d)/, '$1.$2')
+          .replace(/(\d{3})(\d{1,2})$/, '$1-$2')
+      ),
+    email: z
+      .string()
+      .nonempty('O email é obrigatorio')
+      .email('formato de e-mail inválido'),
+    favoriteColor: z
+      .string()
+      .nonempty('A cor favorita é obrigatória')
+      .refine((color) => color != '0', { message: 'Selecione uma cor' }),
+    note: z.string().nonempty('A observação é obrigatória'),
+  });
+
   const navigate = useNavigate();
   const { createNewClient, error } = useClient();
   const [showApiError, setShowApiError] = useState(false);
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors },
-  } = useForm<formProps>();
+  } = useForm<formProps>({
+    resolver: zodResolver(createClientFormSchema),
+  });
+
+  const registerWithMask = useHookFormMask(register);
 
   const onSubmit = async (data: formProps) => {
     console.log(data);
@@ -48,52 +93,42 @@ export function Form() {
               className={errors?.name && 'errors'}
               type="text"
               placeholder="Nome completo"
-              {...register('name', { required: true, maxLength: 80 })}
+              {...register('name')}
             />
             <p className="validateError">
-              {errors?.name?.type == 'maxLength' && `Máximo de 80 caracteres `}
-              {errors?.name?.type == 'required' && `Campo obrigatório`}
+              {errors.name && errors.name.message}
             </p>
           </div>
+
           <div className="field">
             <input
-              {...register('cpf', {
-                required: 'Campo obrigatório',
-                validate: (value) => {
-                  const unmaskedValue = value.replace(/\D/g, '');
-                  return (
-                    unmaskedValue.length === 11 || 'CPF deve estar completo'
-                  );
-                },
-                onChange: (e) => setValue('cpf', e.target.value),
-              })}
+              type="text"
               placeholder="CPF"
+              inputMode="numeric"
+              {...registerWithMask('cpf', '999.999.999-99')}
             />
-            <p className="validateError">
-              {errors?.cpf?.type == 'required' && `Campo obrigatório`}
-              {errors?.cpf?.type == 'validate' && errors.cpf.message}
-            </p>
+
+            <p className="validateError">{errors.cpf && errors.cpf.message}</p>
           </div>
+
           <div className="field">
             <input
               className={errors?.email && 'errors'}
               type="text"
               placeholder="E-mail"
-              {...register('email', { required: true })}
+              {...register('email')}
             />
+
             <p className="validateError">
-              {errors?.email?.type == 'required' && `Campo obrigatório`}{' '}
+              {errors.email && errors.email.message}
             </p>
           </div>
+
           <div className="field">
             <div className="colorsBox">
               <select
                 className={`colors ${errors?.favoriteColor && 'errors'}`}
-                {...register('favoriteColor', {
-                  validate: (value) => {
-                    return value != '0';
-                  },
-                })}
+                {...register('favoriteColor')}
               >
                 <option value="0">Escolha uma cor</option>
                 {colorsList.map((favoriteColor) => {
@@ -105,21 +140,24 @@ export function Form() {
                 })}
               </select>
               <p className="validateError">
-                {errors?.favoriteColor?.type == 'validate' &&
-                  `Campo obrigatório`}
+                {errors.favoriteColor && errors.favoriteColor.message}
               </p>
             </div>
           </div>
+
           <div className="field">
+
             <textarea
               className={`note ${errors?.note && 'errors'}`}
               placeholder="Observações..."
-              {...register('note', { required: true })}
+              {...register('note')}
             />
+
             <p className="validateError">
-              {errors?.note?.type == 'required' && `Campo obrigatório`}
+              {errors.note && errors.note.message}
             </p>
           </div>
+
           <div className="submitBtn">
             <button type="submit">Enviar</button>
           </div>
