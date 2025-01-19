@@ -99,4 +99,11 @@ export const FormFields = styled.form`
     border-bottom: 1px solid ${(props) => props.theme['blue-300']};
     box-shadow: none;
   }
+
+  .apiError {
+    width: 100%;
+    text-align: center;
+    color: ${(props) => props.theme['red-300']};
+    font-size: 0.85rem;
+  }
 `;

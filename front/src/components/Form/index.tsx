@@ -1,16 +1,11 @@
 import { FormContainer, Header, FormFields } from './styles';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import { formProps } from '../../types';
+import { useClient } from '../../hooks/useClient';
+import { useState } from 'react';
 
-interface formProps {
-  name: string;
-  cpf: string;
-  email: string;
-  color: string;
-  note: string;
-}
 export function Form() {
-  const navigate = useNavigate();
   const colorsList = [
     'vermelho',
     'laranja',
@@ -20,6 +15,9 @@ export function Form() {
     'anil',
     'violeta',
   ];
+  const navigate = useNavigate();
+  const { createNewClient, error } = useClient();
+  const [showApiError, setShowApiError] = useState(false);
   const {
     register,
     handleSubmit,
@@ -27,12 +25,17 @@ export function Form() {
     formState: { errors },
   } = useForm<formProps>();
 
-  const onSubmit = (data: formProps) => {
+  const onSubmit = async (data: formProps) => {
     console.log(data);
-    //Chamada API
-
+    const success = await createNewClient(data);
+    console.log(success);
+    if (!success) {
+      setShowApiError(!success);
+      return;
+    }
     navigate('/success', { state: { canAccessSuccessPage: true } });
   };
+
   return (
     <>
       <FormContainer>
@@ -56,12 +59,19 @@ export function Form() {
             <input
               {...register('cpf', {
                 required: 'Campo obrigatório',
+                validate: (value) => {
+                  const unmaskedValue = value.replace(/\D/g, '');
+                  return (
+                    unmaskedValue.length === 11 || 'CPF deve estar completo'
+                  );
+                },
                 onChange: (e) => setValue('cpf', e.target.value),
               })}
               placeholder="CPF"
             />
             <p className="validateError">
               {errors?.cpf?.type == 'required' && `Campo obrigatório`}
+              {errors?.cpf?.type == 'validate' && errors.cpf.message}
             </p>
           </div>
           <div className="field">
@@ -78,24 +88,25 @@ export function Form() {
           <div className="field">
             <div className="colorsBox">
               <select
-                className={`colors ${errors?.color && 'errors'}`}
-                {...register('color', {
+                className={`colors ${errors?.favoriteColor && 'errors'}`}
+                {...register('favoriteColor', {
                   validate: (value) => {
                     return value != '0';
                   },
                 })}
               >
                 <option value="0">Escolha uma cor</option>
-                {colorsList.map((color) => {
+                {colorsList.map((favoriteColor) => {
                   return (
-                    <option key={color} value={color}>
-                      {color}
+                    <option key={favoriteColor} value={favoriteColor}>
+                      {favoriteColor}
                     </option>
                   );
                 })}
               </select>
               <p className="validateError">
-                {errors?.color?.type == 'validate' && `Campo obrigatório`}
+                {errors?.favoriteColor?.type == 'validate' &&
+                  `Campo obrigatório`}
               </p>
             </div>
           </div>
@@ -112,6 +123,8 @@ export function Form() {
           <div className="submitBtn">
             <button type="submit">Enviar</button>
           </div>
+
+          <p className="apiError">{showApiError && error}</p>
         </FormFields>
       </FormContainer>
     </>
