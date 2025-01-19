@@ -49,12 +49,12 @@ export function Form() {
     email: z
       .string()
       .nonempty('O email é obrigatorio')
-      .email('formato de e-mail inválido'),
+      .email('Formato de e-mail inválido'),
     favoriteColor: z
       .string()
       .nonempty('A cor favorita é obrigatória')
       .refine((color) => color != '0', { message: 'Selecione uma cor' }),
-    note: z.string().nonempty('A observação é obrigatória'),
+    note: z.string(),
   });
 
   const navigate = useNavigate();

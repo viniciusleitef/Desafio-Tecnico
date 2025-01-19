@@ -127,6 +127,7 @@ export const FormFields = styled.form`
 
   .apiError {
     width: 100%;
+    height: 1.1rem;
     text-align: center;
     color: ${(props) => props.theme['red-300']};
     font-size: 0.85rem;
