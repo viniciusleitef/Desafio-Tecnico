@@ -7,19 +7,10 @@ export class ClientController {
   constructor(private readonly clientService: ClientService) {}
 
   // GET route to get all clients
-  @Get()
-  findAll(): ClientDto[] {
-    return [
-      {
-        name: 'John Doe',
-        cpf: '12345678901',
-        email: 'john.doe@example.com',
-        favoriteColor: 'blue',
-        note: 'Hello, I am John Doe.',
-      },
-    ];
+  @Get('/all')
+  findAll(): Promise<CreateClientResponseDto[]> {
+    return this.clientService.findAll();
   }
-
   // POST route to create a new client by passing the client data in the request body
   @Post()
   create(@Body() client: ClientDto): Promise<CreateClientResponseDto> {

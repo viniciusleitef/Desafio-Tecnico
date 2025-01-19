@@ -28,6 +28,16 @@ export class ClientService {
     return client;
   }
 
+  // Method to return all clients registered
+  async findAll(): Promise<CreateClientResponseDto[]> {
+    try {
+      return await this.prisma.client.findMany();
+    } catch (error) {
+      console.error('Erro ao buscar clientes', error);
+      throw error;
+    }
+  }
+
   // Method to create a new client in database
   async create(client: ClientDto): Promise<CreateClientResponseDto> {
     try {
