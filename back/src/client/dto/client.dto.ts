@@ -6,6 +6,7 @@ import {
   Matches,
 } from 'class-validator';
 
+// DTO for client input validation
 export class ClientDto {
   @IsString()
   @IsNotEmpty()
@@ -31,6 +32,7 @@ export class ClientDto {
   note: string;
 }
 
+// DTO for the client response after creation
 export class CreateClientResponseDto {
   id: number;
   name: string;

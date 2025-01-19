@@ -5,6 +5,8 @@ import { ClientDto, CreateClientResponseDto } from './dto/client.dto';
 @Controller('client')
 export class ClientController {
   constructor(private readonly clientService: ClientService) {}
+
+  // GET route to get all clients
   @Get()
   findAll(): ClientDto[] {
     return [
@@ -17,6 +19,8 @@ export class ClientController {
       },
     ];
   }
+
+  // POST route to create a new client by passing the client data in the request body
   @Post()
   create(@Body() client: ClientDto): Promise<CreateClientResponseDto> {
     return this.clientService.create(client);
