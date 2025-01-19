@@ -1,7 +1,12 @@
+import { HomeContainer } from './styles';
+import { Form } from '../../components/Form';
+
 export function Home() {
   return (
     <>
-      <h1>Home Page</h1>
+      <HomeContainer>
+        <Form />
+      </HomeContainer>
     </>
   );
 }
