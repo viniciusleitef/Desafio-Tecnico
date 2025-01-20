@@ -1,0 +1,28 @@
+services:
+  backend:
+    image: viniarchizx/api-desafio
+    container_name: api
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    command: sh -c "npx prisma migrate deploy && npm run start"
+
+  frontend:
+    image: viniarchizx/spa-desafio
+    container_name: spa
+    ports:
+      - "4173:4173"
+    depends_on:
+      - backend
+
+  db:
+    container_name: postgres
+    image: postgres:13
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
