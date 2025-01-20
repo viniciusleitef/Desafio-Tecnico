@@ -19,6 +19,7 @@ export function Form() {
     'violeta',
   ];
 
+  // validate form data 
   const createClientFormSchema = z.object({
     name: z
       .string()
@@ -68,10 +69,13 @@ export function Form() {
     resolver: zodResolver(createClientFormSchema),
   });
 
+  //Aplly mask
   const registerWithMask = useHookFormMask(register);
 
   const onSubmit = async (data: formProps) => {
     console.log(data);
+
+    // API Request
     const success = await createNewClient(data);
     console.log(success);
     if (!success) {
@@ -101,12 +105,15 @@ export function Form() {
           </div>
 
           <div className="field">
+
+            {/* Applying mask */}
             <input
               type="text"
               placeholder="CPF"
               inputMode="numeric"
+
               {...registerWithMask('cpf', '999.999.999-99')}
-            />
+              />
 
             <p className="validateError">{errors.cpf && errors.cpf.message}</p>
           </div>
@@ -131,6 +138,8 @@ export function Form() {
                 {...register('favoriteColor')}
               >
                 <option value="0">Escolha uma cor</option>
+
+                {/* Display colors dynamically */}
                 {colorsList.map((favoriteColor) => {
                   return (
                     <option key={favoriteColor} value={favoriteColor}>

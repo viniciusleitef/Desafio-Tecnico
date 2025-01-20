@@ -7,11 +7,13 @@ export function Success() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  //block access to anyone who does not submit the form
   useEffect(() => {
     if (!location.state?.canAccessSuccessPage) {
       navigate('/');
     }
   }, [location.state, navigate]);
+  
   return (
     <>
       <SuccessContainer>
